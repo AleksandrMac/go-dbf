@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/axgle/mahonia"
+	"github.com/AleksandrMac/mahonia"
 )
 
 func NewFromFile(fileName string, fileEncoding string) (table *DbfTable, err error) {

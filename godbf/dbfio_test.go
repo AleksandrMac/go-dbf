@@ -41,6 +41,7 @@ func TestDbfTable_NewFromByteArray_TableIsCorrect(t *testing.T) {
 	verifyTableIsCorrect(tableUnderTest, g)
 }
 
+// nolint
 func TestDbfTable_SaveFile_LoadOfSavedIsCorrect(t *testing.T) {
 	g := NewGomegaWithT(t)
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/axgle/mahonia"
+	"github.com/AleksandrMac/mahonia"
 )
 
 const (
@@ -122,8 +122,10 @@ func New(encoding string) (table *DbfTable) {
 	} else {
 		dt.dataStore[29] = 0x57 // ANSI
 	}
-
 	return dt
+}
+func (dt *DbfTable) SetCodeFlag(code byte) {
+	dt.dataStore[29] = code
 }
 
 func (dt *DbfTable) AddBooleanField(fieldName string) (err error) {
