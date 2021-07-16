@@ -128,6 +128,14 @@ func (dt *DbfTable) SetCodeFlag(code byte) {
 	dt.dataStore[29] = code
 }
 
+func (dt *DbfTable) OnMDXFlag(mdx bool) {
+	if mdx {
+		dt.dataStore[28] = 0x00
+	} else {
+		dt.dataStore[28] = 0x01
+	}
+}
+
 func (dt *DbfTable) AddBooleanField(fieldName string) (err error) {
 	return dt.addField(fieldName, Logical, Logical.fixedFieldLength(), Logical.decimalCountNotApplicable())
 }
