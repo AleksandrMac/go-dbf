@@ -16,16 +16,17 @@ const (
 
 type DbfTable struct {
 	// dbase file header information
-	fileSignature         uint8 // Valid dBASE III PLUS table file (03h without a memo .DBT file; 83h with a memo)
-	updateYear            uint8 // Date of last update; in YYMMDD format.
-	updateMonth           uint8
-	updateDay             uint8
-	numberOfRecords       uint32   // Number of records in the table.
-	numberOfBytesInHeader uint16   // Number of bytes in the header.
-	lengthOfEachRecord    uint16   // Number of bytes in the record.
-	reservedBytes         [20]byte // Reserved bytes
-	fieldDescriptor       [32]byte // Field descriptor array
-	fieldTerminator       int8     // 0Dh stored as the field terminator.
+	fileSignature             uint8 // Valid dBASE III PLUS table file (03h without a memo .DBT file; 83h with a memo)
+	updateYear                uint8 // Date of last update; in YYMMDD format.
+	updateMonth               uint8
+	updateDay                 uint8
+	numberOfRecords           uint32   // Number of records in the table.
+	numberOfBytesInHeader     uint16   // Number of bytes in the header.
+	lengthOfEachRecord        uint16   // Number of bytes in the record.
+	reservedSliceForNewRecord []byte   // Reserved slice byte for insertion record
+	reservedBytes             [20]byte // Reserved bytes
+	fieldDescriptor           [32]byte // Field descriptor array
+	fieldTerminator           int8     // 0Dh stored as the field terminator.
 
 	numberOfFields int // number of fiels/colums in dbase file
 
@@ -342,7 +343,11 @@ func (dt *DbfTable) AddNewRecord() (newRecordNumber int) {
 		dt.dataEntryStarted = true
 	}
 
-	newRecord := make([]byte, dt.lengthOfEachRecord)
+	if len(dt.reservedSliceForNewRecord) < int(dt.lengthOfEachRecord) {
+		dt.reservedSliceForNewRecord = make([]byte, 0, dt.lengthOfEachRecord)
+	}
+
+	newRecord := dt.reservedSliceForNewRecord
 	dt.dataStore = appendSlice(dt.dataStore, newRecord)
 
 	// since row numbers are "0" based first we set newRecordNumber
