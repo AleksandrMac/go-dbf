@@ -8,19 +8,19 @@ import (
 	"github.com/AleksandrMac/mahonia"
 )
 
-func NewFromFile(fileName string, fileEncoding string) (table *DbfTable, err error) {
+func NewFromFile(fileName string, fileEncoding string, opts ...OptionFn) (table *DbfTable, err error) {
 	s, err := readFile(fileName)
 	if err != nil {
 		return
 	}
-	return createDbfTable(s, fileEncoding)
+	return createDbfTable(s, fileEncoding, opts...)
 }
 
-func NewFromByteArray(data []byte, fileEncoding string) (table *DbfTable, err error) {
-	return createDbfTable(data, fileEncoding)
+func NewFromByteArray(data []byte, fileEncoding string, opts ...OptionFn) (table *DbfTable, err error) {
+	return createDbfTable(data, fileEncoding, opts...)
 }
 
-func createDbfTable(s []byte, fileEncoding string) (table *DbfTable, err error) {
+func createDbfTable(s []byte, fileEncoding string, opts ...OptionFn) (table *DbfTable, err error) {
 	// Create and populate DbaseTable struct
 	dt := new(DbfTable)
 
@@ -88,6 +88,10 @@ func createDbfTable(s []byte, fileEncoding string) (table *DbfTable, err error) 
 
 	// set DbfTable dataStore slice that will store the complete file in memory
 	dt.dataStore = s
+
+	for _, opt := range opts {
+		opt(dt)
+	}
 
 	return dt, nil
 }

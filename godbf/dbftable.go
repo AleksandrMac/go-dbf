@@ -56,7 +56,7 @@ type DbfTable struct {
 }
 
 // New creates a new dbase table from scratch for the given character encoding
-func New(encoding string) (table *DbfTable) {
+func New(encoding string, opts ...OptionFn) (table *DbfTable) {
 
 	// Create and populate DbaseTable struct
 	dt := new(DbfTable)
@@ -122,6 +122,11 @@ func New(encoding string) (table *DbfTable) {
 	} else {
 		dt.dataStore[29] = 0x57 // ANSI
 	}
+
+	for _, opt := range opts {
+		opt(dt)
+	}
+
 	return dt
 }
 func (dt *DbfTable) SetCodeFlag(code byte) {
@@ -229,9 +234,9 @@ func (dt *DbfTable) normaliseFieldName(name string) (s string) {
 }
 
 /*
-  getByteSlice converts value to byte slice according to given encoding and return
-  a slice that is fixedFieldLength equals to numberOfBytes or less if the string is shorter than
-  numberOfBytes
+getByteSlice converts value to byte slice according to given encoding and return
+a slice that is fixedFieldLength equals to numberOfBytes or less if the string is shorter than
+numberOfBytes
 */
 func (dt *DbfTable) convertToByteSlice(value string, numberOfBytes int) (s []byte) {
 	e := mahonia.NewEncoder(dt.fileEncoding)
@@ -432,7 +437,7 @@ func (dt *DbfTable) fillFieldWithBlanks(fieldLength int, offset int, recordOffse
 	}
 }
 
-//FieldValue returns the content for the record at the given row and field index as a string
+// FieldValue returns the content for the record at the given row and field index as a string
 // If the row or field index is invalid, an error is returned .
 func (dt *DbfTable) FieldValue(row int, fieldIndex int) (value string) {
 
@@ -478,13 +483,25 @@ func enforceBlankPadding(temp []byte) {
 
 // Float64FieldValueByName returns the value of a field given row number and name provided as a float64
 func (dt *DbfTable) Float64FieldValueByName(row int, fieldName string) (value float64, err error) {
-	valueAsString, err := dt.FieldValueByName(row, fieldName)
+	var valueAsString string
+
+	valueAsString, err = dt.FieldValueByName(row, fieldName)
+	if err != nil {
+		return
+	}
+
 	return strconv.ParseFloat(valueAsString, 64)
 }
 
 // Int64FieldValueByName returns the value of a field given row number and name provided as an int64
 func (dt *DbfTable) Int64FieldValueByName(row int, fieldName string) (value int64, err error) {
-	valueAsString, err := dt.FieldValueByName(row, fieldName)
+	var valueAsString string
+
+	valueAsString, err = dt.FieldValueByName(row, fieldName)
+	if err != nil {
+		return
+	}
+
 	return strconv.ParseInt(valueAsString, 0, 64)
 }
 
@@ -497,7 +514,7 @@ func (dt *DbfTable) FieldValueByName(row int, fieldName string) (value string, e
 	return
 }
 
-//RowIsDeleted returns whether a row has marked as deleted
+// RowIsDeleted returns whether a row has marked as deleted
 func (dt *DbfTable) RowIsDeleted(row int) bool {
 	offset := int(dt.numberOfBytesInHeader)
 	lengthOfRecord := int(dt.lengthOfEachRecord)
