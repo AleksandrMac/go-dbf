@@ -2,6 +2,7 @@ package godbf
 
 import (
 	"errors"
+	"io"
 	"strconv"
 	"strings"
 	"time"
@@ -537,4 +538,10 @@ func (dt *DbfTable) GetRowAsSlice(row int) []string {
 	}
 
 	return s
+}
+
+// WriteTo write dbftable to data. Return len dbftable or error.
+func (dt *DbfTable) WriteTo(data io.Writer) (int64, error) {
+	n, err := data.Write(dt.dataStore)
+	return int64(n), err
 }
