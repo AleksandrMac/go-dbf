@@ -344,7 +344,7 @@ func (dt *DbfTable) AddNewRecord() (newRecordNumber int) {
 	}
 
 	if len(dt.reservedSliceForNewRecord) < int(dt.lengthOfEachRecord) {
-		dt.reservedSliceForNewRecord = make([]byte, 0, dt.lengthOfEachRecord)
+		dt.reservedSliceForNewRecord = make([]byte, dt.lengthOfEachRecord)
 	}
 
 	newRecord := dt.reservedSliceForNewRecord
