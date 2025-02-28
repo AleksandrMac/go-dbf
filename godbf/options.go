@@ -8,3 +8,9 @@ func WithIncreasedDatastore(increasedSize int) OptionFn {
 		dt.dataStore = append(newStore, dt.dataStore...)
 	}
 }
+
+func NoTrimSpace() OptionFn {
+	return func(dt *DbfTable) {
+		dt.noTrimSpace = true
+	}
+}

@@ -55,6 +55,9 @@ type DbfTable struct {
 
 	// keeps the dbase table in memory as byte array
 	dataStore []byte
+
+	// по умолчанию значения очищаются от не значащих пробелов, этот флаг позволяет сохранить исходное значение
+	noTrimSpace bool
 }
 
 // New creates a new dbase table from scratch for the given character encoding
